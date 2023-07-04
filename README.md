@@ -47,10 +47,10 @@ The library should implement all requests on [OpenAI references](https://platfor
 
 ## Installation
 
-The library consists of two files: [include/openai/openai.hpp](https://github.com/olrea/openai-cpp/blob/main/include/openai/openai.hpp) and [include/openai/nlohmann/json.hpp](https://github.com/olrea/openai-cpp/blob/main/include/openai/nlohmann/json.hpp).  
+The library consists of one file, [include/openai/openai.hpp](https://github.com/olrea/openai-cpp/blob/main/include/openai/openai.hpp).
 Just copy the [include/openaicpp](https://github.com/olrea/openai-cpp/tree/main/include/openai) folder in your project and you can use `#include "openai.hpp"` in your code. That is all.  
 
-> Note: **OpenAI-CPP** uses [Nlohmann Json](https://github.com/nlohmann/json) which is available in `include/json.hpp`. Feel free to use your own copy for faster compile time build. 
+> Note: **OpenAI-CPP** uses [Nlohmann Json](https://github.com/nlohmann/json) which is included as a git submodule.
 
 ## Usage
 

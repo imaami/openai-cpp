@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.14)
 
 project(examples)
 
@@ -57,11 +57,11 @@ set (TARGETS_EXAMPLES
 
 foreach( name ${TARGETS_EXAMPLES} )
     add_executable(${name} ${name}.cpp)
-    set_property(TARGET ${name} PROPERTY CXX_STANDARD 11)
+    set_property(TARGET ${name} PROPERTY CXX_STANDARD 20)
     set_property(TARGET ${name} PROPERTY CXX_STANDARD_REQUIRED ON)
     target_compile_options(${name} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W4>
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
     )
-    target_link_libraries(${name} ${CURL_LIBRARIES})
+    target_link_libraries(${name} ${CURL_LIBRARIES} openaicpp)
  endforeach()
