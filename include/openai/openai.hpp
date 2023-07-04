@@ -376,6 +376,11 @@ public:
                     token_ = std::string{env_p};
                 }
             }
+           if (organization.empty()) {
+                if(const char* env_p = std::getenv("OPENAI_API_OID")) {
+                    organization_ = std::string{env_p};
+                }
+            }
             if (api_base_url.empty()) {
                 if(const char* env_p = std::getenv("OPENAI_API_BASE")) {
                     base_url = std::string{env_p} + "/";
