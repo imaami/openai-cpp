@@ -2,66 +2,43 @@ cmake_minimum_required(VERSION 3.14)
 
 project(examples)
 
-# You can comment/Uncomment this line if you wish to hide/show verbose output
-# add_definitions(-DOPENAI_VERBOSE_OUTPUT=1)
-
-option(CURL_STATIC_LINKING "Set to ON to build libcurl with static linking."  OFF)
-  
-if(CURL_STATIC_LINKING)
-    message("-DCURL_STATICLIB [added]")
-    add_definitions(-DCURL_STATICLIB)
-endif()
-
-add_definitions(-DJSON_USE_IMPLICIT_CONVERSIONS=0)
-
-# SET(CURL_MIN_VERSION "7.61.0")
 find_package(CURL REQUIRED)
 
-include_directories(${CURL_INCLUDE_DIRS})
+option(CURL_STATIC_LINKING "Statically link against libcurl." OFF)
+option(OPENAI_VERBOSE_OUTPUT "Enable openai-cpp verbose output." OFF)
 
-message("Using compiler ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+file(GLOB EXAMPLES_SRC [0-9][0-9]-*.cpp)
 
-# if ("${CMAKE_MAJOR_VERSION}${CMAKE_MINOR_VERSION}" LESS 31)
-#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-# endif()
+foreach(src_file ${EXAMPLES_SRC})
+    get_filename_component(name ${src_file} NAME_WE)
+    add_executable(${name})
+    target_sources(${name} PRIVATE ${src_file})
 
-set (SOURCES_EXAMPLES
-    00-showcase
-    01-model
-    02-completion
-    03-edit
-    04-image
-    05-embedding
-    06-file
-    07-fine-tune
-    09-instances
-    10-chat
-    11-audio
-    12-moderation
-)
+    if(CURL_STATIC_LINKING)
+        target_compile_definitions(${name} PRIVATE CURL_STATICLIB)
+    endif()
 
-set (TARGETS_EXAMPLES
-    00-showcase
-    01-model
-    02-completion
-    03-edit
-    04-image
-    05-embedding
-    06-file
-    07-fine-tune
-    09-instances
-    10-chat
-    11-audio
-    12-moderation
-)
+    if(OPENAI_VERBOSE_OUTPUT)
+        target_compile_definitions(${name} PRIVATE OPENAI_VERBOSE_OUTPUT=1)
+    else()
+        target_compile_definitions(${name} PRIVATE OPENAI_VERBOSE_OUTPUT=0)
+    endif()
 
-foreach( name ${TARGETS_EXAMPLES} )
-    add_executable(${name} ${name}.cpp)
-    set_property(TARGET ${name} PROPERTY CXX_STANDARD 20)
-    set_property(TARGET ${name} PROPERTY CXX_STANDARD_REQUIRED ON)
+    target_compile_definitions(${name} PRIVATE JSON_USE_IMPLICIT_CONVERSIONS=0)
+    target_compile_features(${name} PRIVATE cxx_std_20)
     target_compile_options(${name} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W4>
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
+        $<$<CXX_COMPILER_ID:Clang>:-Weverything
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+            -Wno-covered-switch-default
+            -Wno-disabled-macro-expansion
+            -Wno-padded
+            -Wno-pre-c++17-compat
+            -Wno-pre-c++20-compat
+            -Wno-unsafe-buffer-usage
+            -Wno-weak-vtables>
     )
     target_link_libraries(${name} ${CURL_LIBRARIES} openaicpp)
- endforeach()
+endforeach()
